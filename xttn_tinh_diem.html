@@ -1,0 +1,124 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tính điểm Xét tuyển tài năng 1.3</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; background: #f4f4f4; }
+    h2 { color: #333; text-align: center; }
+    label { font-weight: bold; display: block; margin-top: 15px; }
+    input[type=number] { width: 100%; padding: 8px; margin-top: 5px; }
+    .result { margin-top: 20px; font-size: 18px; font-weight: bold; color: green; }
+    .container { max-width: 700px; margin: auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 8px rgba(0,0,0,0.1); }
+    button { margin-top: 20px; padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    button:hover { background: #0056b3; }
+    img.logo { display: block; margin: 0 auto 20px; max-width: 200px; }
+    textarea { width: 100%; height: 100px; margin-top: 10px; }
+    .checkbox-group { margin-top: 10px; padding-left: 20px; }
+    .checkbox-group label { font-weight: normal; display: block; margin: 5px 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <img src="logo tsa.jpg" alt="Logo TSA" class="logo">
+    <h2>Tính điểm xét tuyển tài năng 1.3</h2>
+    
+    <label for="math">Điểm Toán</label>
+    <input type="number" id="math" min="0" max="10" step="0.1">
+
+    <label for="literature">Điểm Ngữ Văn</label>
+    <input type="number" id="literature" min="0" max="10" step="0.1">
+
+    <label for="subject3">Điểm môn 3 (Lý/Hóa/Sinh/Tin)</label>
+    <input type="number" id="subject3" min="0" max="10" step="0.1">
+
+    <label for="main">Thành tích chính</label>
+    <select id="main">
+      <option value="50">Giải Nhất quốc gia</option>
+      <option value="45">Giải Nhì quốc gia</option>
+      <option value="40">Giải Ba quốc gia</option>
+      <option value="35">Giải Khuyến khích quốc gia</option>
+      <option value="30">Giải Nhất tỉnh</option>
+      <option value="25">Giải Nhì tỉnh</option>
+      <option value="20">Giải Ba tỉnh</option>
+      <option value="15">Giải Khuyến khích tỉnh</option>
+      <option value="50">Olympia vòng năm</option>
+      <option value="40">Olympia vòng quý</option>
+      <option value="30">Olympia vòng tháng</option>
+    </select>
+
+    <label><input type="checkbox" id="specialized"> Tôi là học sinh chuyên (cộng 20 điểm vào thành tích chính, tối đa 50 điểm)</label>
+
+    <label>Thành tích thưởng (tích chọn nhiều):</label>
+    <div class="checkbox-group">
+      <label><input type="checkbox" class="bonus" value="1"> IELTS 5.0</label>
+      <label><input type="checkbox" class="bonus" value="2"> IELTS 5.5</label>
+      <label><input type="checkbox" class="bonus" value="3"> IELTS 6.0</label>
+      <label><input type="checkbox" class="bonus" value="4"> IELTS 6.5</label>
+      <label><input type="checkbox" class="bonus" value="5"> IELTS 7.0</label>
+      <label><input type="checkbox" class="bonus" value="6"> IELTS 7.5</label>
+      <label><input type="checkbox" class="bonus" value="7"> IELTS 8.0+</label>
+      <label><input type="checkbox" class="bonus" value="2"> Giải Nhì tỉnh khác môn</label>
+      <label><input type="checkbox" class="bonus" value="1"> Giải Ba tỉnh khác môn</label>
+      <label><input type="checkbox" class="bonus" value="3"> Hoạt động xã hội - Bằng khen</label>
+      <label><input type="checkbox" class="bonus" value="1"> Hiến máu</label>
+      <label><input type="checkbox" class="bonus" value="1"> Giải Ba KHKT tỉnh khác</label>
+    </div>
+
+    <button onclick="calculateScore()">Tính điểm XTTN</button>
+    <div class="result" id="result"></div>
+
+    <label for="log">Kết quả lưu lại:</label>
+    <textarea id="log" readonly></textarea>
+    <button onclick="saveResult()">Lưu kết quả</button>
+  </div>
+
+  <script>
+    function calculateScore() {
+      const math = parseFloat(document.getElementById("math").value) || 0;
+      const literature = parseFloat(document.getElementById("literature").value) || 0;
+      const subject3 = parseFloat(document.getElementById("subject3").value) || 0;
+      let main = parseFloat(document.getElementById("main").value);
+      const isSpecialized = document.getElementById("specialized").checked;
+
+      if (isSpecialized) {
+        main += 20;
+      }
+      main = Math.min(main, 50);
+
+      let bonusTotal = 0;
+      let bonusText = [];
+      document.querySelectorAll(".bonus:checked").forEach(cb => {
+        const val = parseFloat(cb.value);
+        bonusTotal += val;
+        bonusText.push(cb.parentElement.innerText);
+      });
+      bonusTotal = Math.min(bonusTotal, 10);
+
+      const academic = ((math * 3 + literature + subject3 * 2) * 4) / 6;
+      const total = Math.min(academic + main + bonusTotal, 100);
+
+      document.getElementById("result").innerText = `Tổng điểm XTTN của bạn là: ${total.toFixed(2)} / 100`;
+    }
+
+    function saveResult() {
+      const math = document.getElementById("math").value;
+      const literature = document.getElementById("literature").value;
+      const subject3 = document.getElementById("subject3").value;
+      const mainText = document.getElementById("main").options[document.getElementById("main").selectedIndex].text;
+      const isSpecialized = document.getElementById("specialized").checked ? " + Học sinh chuyên" : "";
+
+      let bonusText = [];
+      document.querySelectorAll(".bonus:checked").forEach(cb => {
+        bonusText.push(cb.parentElement.innerText);
+      });
+
+      const result = document.getElementById("result").innerText;
+      const logEntry = `Toán: ${math}, Văn: ${literature}, Môn 3: ${subject3}, Thành tích chính: ${mainText}${isSpecialized}, Thưởng: ${bonusText.join(", ")} => ${result}\n`;
+      document.getElementById("log").value += logEntry;
+    }
+  </script>
+</body>
+</html>
